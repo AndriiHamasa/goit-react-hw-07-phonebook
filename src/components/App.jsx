@@ -3,16 +3,29 @@ import { Filter } from './Filter';
 import { ContactForm } from './ContactForm';
 import { ContactList } from './ContactList';
 import { useDispatch, useSelector } from 'react-redux';
+import { changeFilter } from 'redux/contactsSlice';
+import { useEffect } from 'react';
+import { addContact, deleteContact, fetchContacts } from 'redux/operations';
 import {
-  deleteContact,
-  addContact,
-  changeFilter
-} from 'redux/contactsSlice';
+  selectContactsState,
+  selectFilter,
+} from 'redux/selectors';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 export const App = () => {
   const dispatch = useDispatch();
+  const {
+    items: contacts,
+    isLoading,
+    error,
+  } = useSelector(selectContactsState);
+  const filter = useSelector(selectFilter);
 
-  const {filter, contacts} = useSelector(state => state.state);
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const handleChange = event => {
     const payload = event.currentTarget.value;
@@ -35,7 +48,12 @@ export const App = () => {
           collectionName => collectionName.toLowerCase() === name.toLowerCase()
         )
     ) {
-      return alert(`${name} is already in contacts`);
+      return toast.info(`${name} is already in contacts`, {
+        position: toast.POSITION.TOP_RIGHT,
+        style: {
+          fontSize: 16
+        }
+      });
     }
     dispatch(addContact(payload));
   };
@@ -64,9 +82,14 @@ export const App = () => {
         <h1 style={{ textAlign: 'center' }}>Phonebook</h1>
         <ContactForm onAddContact={handleAddContact} />
 
+        <ToastContainer />
         <h2 style={{ textAlign: 'center' }}>Contacts</h2>
         <Filter filter={filter} onChange={handleChange} />
-        <ContactList contacts={renderContacts()} onDelete={handleDelete} />
+        {isLoading && <h2>Loading...</h2>}
+        {error && <h3>Error...</h3>}
+        {contacts.length > 0 && !error && (
+          <ContactList contacts={renderContacts()} onDelete={handleDelete} />
+        )}
       </div>
     </div>
   );
