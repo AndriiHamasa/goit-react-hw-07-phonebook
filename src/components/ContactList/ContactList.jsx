@@ -2,12 +2,18 @@ import { Li, Btn } from './ContactList.styled';
 import PropTypes from 'prop-types';
 
 export const ContactList = ({ contacts, onDelete }) => {
+  const handleDelete = e => {
+    e.currentTarget.textContent = 'loading...';
+    e.currentTarget.disabled = true
+    onDelete(e);
+  };
+
   return (
     <ul>
       {contacts.map(contact => (
         <Li key={contact.id}>
           {contact.name}: <i>{contact.phone}</i>
-          <Btn id={contact.id} onClick={onDelete}>
+          <Btn id={contact.id} onClick={handleDelete}>
             Delete
           </Btn>
         </Li>

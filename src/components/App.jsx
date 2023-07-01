@@ -18,7 +18,7 @@ export const App = () => {
   const dispatch = useDispatch();
   const {
     items: contacts,
-    isLoading,
+    addLoading,
     error,
   } = useSelector(selectContactsState);
   const filter = useSelector(selectFilter);
@@ -85,7 +85,7 @@ export const App = () => {
         <ToastContainer />
         <h2 style={{ textAlign: 'center' }}>Contacts</h2>
         <Filter filter={filter} onChange={handleChange} />
-        {isLoading && <h2>Loading...</h2>}
+        {addLoading && <h2>Loading...</h2>}
         {error && <h3>Error...</h3>}
         {contacts.length > 0 && !error && (
           <ContactList contacts={renderContacts()} onDelete={handleDelete} />
